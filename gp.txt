@@ -1,0 +1,687 @@
+#include<iostream>
+#include<fstream>
+#include<string>
+#include<stdlib.h>
+#include<algorithm>
+using namespace std;
+
+
+
+void Create(string arr1[],long size);
+void Intersection(char f1[20],char f2[20]);
+void Union(char f1[20],char f2[20]);
+int isSameStructure(char file1[20], char file2[20]);
+int IsDuplicate(char file[20]);
+void RemoveDuplicate(char file[20]);
+void Sort(char file[20]);
+long Check(char c);
+long Rows(char file[20]);
+long Columns(char file[20]);
+string CheckFile(char f[20]);
+
+
+
+int main()
+{
+    long row,column,r=1,c=1,l=1,i,p,p1,n1,j=0,k=0;
+    char filename1[10],filename2[10],ff[20]="",ff2[20]="";
+    char choice;
+    string n,np,ff1,ffp,y;
+    do
+    {
+    cout<<"\nEnter 1 to create csv file.\n";
+    cout<<"Enter 2 to compare csv file for their same structure. \n";
+    cout<<"Enter 3 to check duplicates exist in a csv file. \n";
+    cout<<"Enter 4 to remove duplicates in csv file.\n";
+    cout<<"Enter 5 to perform sorting in a particular column. \n";
+    cout<<"Enter 6 to find union of two csv file. \n";
+    cout<<"Enter 7 to find inresection of two csv file. \n";
+    cout<<endl;
+    cout<<"Enter your choice:-"<<endl;
+    getline(cin,n);
+    remove(n.begin(),n.end(),' ');            //Error checking 43 to 44
+    n1=Check(n[0]);
+    if(n1==1)
+    {
+        int c;
+        cout<<"Enter number of columns\n";
+        cin>>c;
+        ofstream out("Create_Header.csv");
+        string arr[c];
+        cout<<"Enter header names\n"<<endl;
+        for(i=0;i<c;i++)
+        {
+            cin>>arr[i];
+        }
+        Create(arr,c);
+
+    }
+    else if(n1==2)
+    {
+        cout<<"Enter the name of first csv file\n";
+        cin>>filename1;
+        ff1=CheckFile(filename1);                    //Error checking 94 to 98
+        for(i=0;i<ff1.size();i++)
+        {
+            ff[j++]=ff1[i];
+        }
+        cout<<"Enter the name of second csv file\n";
+        cin>>filename2;
+        ffp=CheckFile(filename2);                   // Error checking 101 to 105
+        for(i=0;i<ffp.size();i++)
+        {
+            ff2[k++]=ffp[i];
+        }
+        p=isSameStructure(ff,ff2);
+        if(p)
+            cout << "Files are of Same structure"<<endl;
+        else
+            cout << "Files are not of Same structure"<<endl;
+    }
+    else if(n1==3)
+    {
+        cout<<"Enter the name of csv file\n";
+        cin>>filename1;
+        ff1=CheckFile(filename1);                // Error checking 116 tp 121
+        for(i=0;i<ff1.size();i++)
+        {
+            ff[j++]=ff1[i];
+        }
+        p1=IsDuplicate(ff);
+        if(p1==1)
+            cout << "File is having the duplicate rows" <<endl;
+        else
+            cout << "File is having the unique rows"<< endl;
+    }
+    else if(n1==4)
+    {
+        cout<<"Enter the name of csv file\n";
+        cin>>filename1;
+        ff1=CheckFile(filename1);               //Error checking 131 to 135
+        for(i=0;i<ff1.size();i++)
+        {
+            ff[j++]=ff1[i];
+        }
+        RemoveDuplicate(ff);
+        cout << "File created Output.csv"<<endl;
+    }
+    else if(n1==5)
+    {
+        cout<<"Enter the name of csv file\n";
+        cin>>filename1;
+        ff1=CheckFile(filename1);
+                // Error checking 143 to 147
+        for(i=0;i<ff1.size();i++)
+        {
+            ff[j++]=ff1[i];
+        }
+
+        Sort(ff);
+        cout << "File created Output.csv"<<endl;
+    }
+    else if(n1==6)
+    {
+        cout<<"Enter the name of first csv file\n";
+        cin>>filename1;
+        ff1=CheckFile(filename1);
+        for(i=0;i<ff1.size();i++)              //Error checking 155 to 159 & from 162 to 166
+        {
+            ff[j++]=ff1[i];
+        }
+        cout<<"Enter the name of second csv file\n";
+        cin>>filename2;
+        ffp=CheckFile(filename2);
+        for(l=0;l<ffp.size();l++)
+        {
+            ff2[k++]=ffp[l];
+        }
+        Union(ff,ff2);
+        cout << "File created Out.csv"<<endl;
+    }
+    else if(n1==7)
+    {
+        cout<<"Enter the name of first csv file\n";
+        cin>>filename1;
+        ff1=CheckFile(filename1);                   //Error checking 174 to 178 & from 181 to 185
+        for(i=0;i<ff1.size();i++)
+        {
+            ff[j++]=ff1[i];
+        }
+        cout<<"Enter the name of second csv file\n";
+        cin>>filename2;
+        ffp=CheckFile(filename1);
+        for(i=0;i<ffp.size();i++)
+        {
+            ff2[k++]=ffp[i];
+        }
+        Intersection(ff,ff2);
+        cout << "File created Out.csv"<<endl;
+    }
+
+    else{
+          cout<<"Wrong choice"<<endl;
+        cout<<"Do you want to continue\n\nEnter Y/N"<<endl;
+        cin>>choice;
+
+    }
+        cout<<"Do you want to continue\n\nEnter Y/N"<<endl;
+        cin>>choice;
+
+    }while(choice=='Y' || choice=='y');
+    exit(0);
+    return 0;
+}
+void Create(string arr1[],long size)
+{
+    ofstream op("Create_Header.csv");
+     cout << "File Create_Header has been created:"<<endl;
+        for(int i=0;i<size;i++)
+        {
+            op << arr1[i] << ",";
+        }
+}
+long Rows(char file[20])
+{
+    char c2;
+    ifstream ip(file);
+    long row=0;
+    c2=ip.get();
+    while(c2!=EOF)
+    {
+        if(c2=='\n')
+            row++;
+        c2=ip.get();
+    }
+    return row++;
+}
+long Columns(char file[20])
+{
+    char c1;
+    ifstream ip(file);
+    long column=0;
+    c1=ip.get();
+    while(c1!='\n')
+    {
+        if(c1==',')
+            column++;
+        c1=ip.get();
+    }
+    return column++;
+}
+void Intersection(char f1[20],char f2[20])
+{
+    ifstream ix(f1);
+    ofstream oo("yoyoy.csv");
+    string ff,ff1;
+    while (ix.good())
+    {
+       fflush(stdin);
+       getline(ix,ff);
+       oo<< ff << "," <<endl;
+    }
+    ifstream ix1(f2);
+    ofstream oo1("yoyoy1.csv");
+    while (ix1.good())
+    {
+       fflush(stdin);
+       getline(ix1,ff1);
+       oo1<< ff1<< "," <<endl;
+    }
+    long row1,row2,column1,column2,i,j,r=1,c=1,y,max,min,rp=1;
+    ifstream ip2("yoyoy.csv"),ip3("yoyoy1.csv");
+    ofstream out("out.csv");
+    row1=Rows("yoyoy.csv");
+    column1=Columns("yoyoy.csv");
+    row2=Rows("yoyoy1.csv");
+    column2=Columns("yoyoy.csv");
+    string Matrix1[row1+1][column1+1],Matrix2[row2+1][column2+1];
+    while(r<=row1)
+    {
+        c=1;
+        while(c<=column1)
+        {
+            getline(ip2,Matrix1[r][c],',');
+            c++;
+        }
+        r++;
+    }
+    r=1;
+    c=1;
+    while(r<=row2)
+    {
+        c=1;
+        while(c<=column2)
+        {
+            getline(ip3,Matrix2[r][c],',');
+            c++;
+        }
+        r++;
+    }
+    cout << "Enter Column no.:-"<<endl;
+    cin >> y;
+    if(row1>row2)
+    {
+        max=row1;
+        min=row2;
+    }
+    else
+    {
+        max=row2;
+        min=row1;
+    }
+    string Result[max+3];
+    for(i=1;i<=min-1;i++)
+    {
+        if(Matrix1[i][y]==Matrix2[i][y])
+        {
+            Result[rp++]=Matrix1[i][y];
+        }
+    }
+    for(i=1;i<=rp-2;i++)
+        out << Result[i] <<",";
+    out.close();
+}
+
+void Union(char f1[20],char f2[20])
+{
+    ifstream ix(f1);
+    ofstream oo("yoyoy.csv");
+    string ff,ff1;
+    while (ix.good())
+    {
+       fflush(stdin);
+       getline(ix,ff);
+       oo<< ff << "," <<endl;
+    }
+    ifstream ix1(f2);
+    ofstream oo1("yoyoy1.csv");
+    while (ix1.good())
+    {
+       fflush(stdin);
+       getline(ix1,ff1);
+       oo1<< ff1<< "," <<endl;
+    }
+    long row1,row2,column1,column2,i,j,r=1,c=1,y,max,min,rp=1;
+    ifstream ip2("yoyoy.csv"),ip3("yoyoy1.csv");
+    ofstream out("out.csv");
+    row1=Rows("yoyoy.csv");
+    column1=Columns("yoyoy.csv");
+    row2=Rows("yoyoy1.csv");
+    column2=Columns("yoyoy.csv");
+    string Matrix1[row1+1][column1+1],Matrix2[row2+1][column2+1];
+    while(r<=row1)
+    {
+        c=1;
+        while(c<=column1)
+        {
+            getline(ip2,Matrix1[r][c],',');
+            c++;
+        }
+        r++;
+    }
+    r=1;
+    c=1;
+    while(r<=row2)
+    {
+        c=1;
+        while(c<=column2)
+        {
+            getline(ip3,Matrix2[r][c],',');
+            c++;
+        }
+        r++;
+    }
+    int y1;
+    cout << "Enter Column no.:-"<<endl;
+    cin >> y1;
+    if(row1>row2)
+    {
+        max=row1;
+        min=row2;
+    }
+    else
+    {
+        max=row2;
+        min=row1;
+    }
+    string Result[max+3];
+    for(i=1;i<=min;i++)
+    {
+        if(Matrix1[i][y1]!=Matrix2[i][y1])
+        {
+            Result[rp]=Matrix1[i][y1];
+            rp++;
+            Result[rp]=Matrix2[i][y1];
+            rp++;
+        }
+        else
+        {
+            Result[rp++]=Matrix2[i][y1];
+        }
+    }
+    if(row1>row2)
+    {
+        for(i=min+1;i<=max;i++)
+            Result[rp++]=Matrix1[i][y1];
+    }
+    else
+    {
+        for(i=min+1;i<=max;i++)
+            Result[rp++]=Matrix2[i][y1];
+    }
+    for(i=1;i<rp-1;i++)
+    {
+        for(j=i+1;j<rp;j++)
+        {
+            if(Result[i]==Result[j])
+            {
+                Result[j]="";
+            }
+        }
+    }
+    for(i=1;i<rp;i++)
+        out << Result[i] <<",";
+    out.close();
+}
+int isSameStructure(char file1[20], char file2[20])
+{
+    ifstream ip1(file1),ip2(file2),ip3(file1),ip4(file2);
+    char column1,column2;
+    char c;
+    int columnFILE1=0,columnFILE2=0,p=0;
+    c=ip1.get();
+    while(c!='\n')
+    {
+        if(c==',')
+            columnFILE1++;
+        c=ip1.get();
+    }
+    columnFILE1++;
+    c=ip2.get();
+    while(c!='\n')
+    {
+        if(c==',')
+            columnFILE2++;
+        c=ip2.get();
+    }
+    columnFILE2++;
+    ip1.close();
+    ip2.close();
+    if(columnFILE1==columnFILE2)
+    {
+        column1=ip3.get();
+        column2=ip4.get();
+        while(column1!='\n' && column2!='\n')
+        {
+            if(column1==column2 || column1==' ' || column2==' ')
+                p++;
+            else
+                return 0;
+           column1=ip3.get();
+           column2=ip4.get();
+        }
+        if(column1=='\n' && column2=='\n' || column1==' ' || column2==' ')
+            return 1;
+        else
+            return 0;
+    }
+    else
+        return 0;
+    ip3.close();
+    ip4.close();
+}
+int IsDuplicate(char file[20])
+{
+    string ff;
+    ifstream ix(file);
+    ofstream oo("file.csv");
+    while (ix.good())
+    {
+        fflush(stdin);
+        getline(ix,ff);
+        oo<< ff << "," <<endl;
+    }
+    ifstream ip("file.csv"),ip1("file.csv"),ip2("file.csv");
+    char c2,c1;
+    long row=0,column=0,r=1,c=1,i1,j1,cp=0,flag,i,j;
+    c2=ip.get();
+    c1=ip1.get();
+    while(c2!=EOF)
+    {
+        if(c2=='\n')
+            row++;
+        c2=ip.get();
+    }
+    row++;
+    while(c1!='\n')
+    {
+        if(c1==',')
+            column++;
+        c1=ip1.get();
+    }
+    column++;
+    string Matrix[row+1][column+1];
+    while(r<=row)
+    {
+        c=1;
+        while(c<=column)
+        {
+            getline(ip2,Matrix[r][c],',');
+            c++;
+        }
+        r++;
+    }
+    ip.close();
+    ip1.close();
+    ip2.close();
+    for(i=1;i<row;i++)
+    {
+        for(i1=i+1;i1<=row;i1++)
+        {
+            cp=0;
+            for(j=1;j<=column;j++)
+            {
+                if(Matrix[i][j]==Matrix[i1][j])
+                {
+                    cp++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            if(cp==column)
+            {
+                flag=1;
+                return flag;
+            }
+        }
+    }
+    return 0;
+}
+void RemoveDuplicate(char file[20])
+{
+    ifstream ix(file);
+    ofstream oo("yoyoy.csv");
+    string ff;
+    while (ix.good())
+    {
+        fflush(stdin);
+        getline(ix,ff);
+        oo<< ff << "," <<endl;
+    }
+    ifstream ip("yoyoy.csv"),ip1("yoyoy.csv"),ip2("yoyoy.csv");
+    ofstream out("Output.csv");
+    char c2,c1;
+    long row=0,column=0,r=1,c=1,i1,j1,cp=0,flag,i,j,t;
+    c2=ip.get();
+    c1=ip1.get();
+    while(c2!=EOF)
+    {
+        if(c2=='\n')
+            row++;
+        c2=ip.get();
+    }
+    row++;
+    while(c1!='\n')
+    {
+        if(c1==',')
+            column++;
+        c1=ip1.get();
+    }
+    string Matrix[row+1][column+1],s;
+    while(r<=row)
+    {
+        c=1;
+        while(c<=column)
+        {
+            getline(ip2,Matrix[r][c],',');
+            c++;
+        }
+        r++;
+    }
+    ip.close();
+    ip1.close();
+    ip2.close();
+    for(i=1;i<row;i++)
+    {
+        for(i1=i+1;i1<=row;i1++)
+        {
+            cp=0;
+            {
+                for(j=1;j<=column;j++)
+                {
+                    s=Matrix[i1][j];
+                    if(Matrix[i][j]==Matrix[i1][j] || s[0]=='\n')
+                    {
+                        cp++;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                if(cp==column)
+                {
+                    for(j=1;j<=column;j++)
+                    {
+                        Matrix[i1][j]="";
+                    }
+                }
+            }
+        }
+    }
+   for(i=1;i<=row;i++)
+    {
+        for(j=1;j<=column;j++)
+        {
+            if(Matrix[i][j]!="")
+            {
+               out << Matrix[i][j] <<",";
+            }
+        }
+    }
+    out.close();
+}
+void Sort(char file[20])
+{
+    ifstream ix(file);
+    ofstream oo("yoyoy.csv");
+    string ff;
+    while (ix.good())
+    {
+       fflush(stdin);
+       getline(ix,ff);
+       oo<< ff << "," <<endl;
+    }
+    ifstream ip("yoyoy.csv"),ip1("yoyoy.csv"),ip2("yoyoy.csv"),ip3("yoyoy.csv");
+    ofstream out("Output.csv");
+    char c2,c1,p;
+    long row=0,column=0,r=1,c=1,i1,j1,cp=0,flag,i,j,l,size1,k1;
+    string k;
+    row=Rows("yoyoy.csv");
+    column=Columns("yoyoy.csv");
+    string Matrix[row+1][column+1],temp,header[column+1];
+    i=1;
+    c=1;
+    while(c<=column)
+    {
+        getline(ip3,header[i++],',');
+        c++;
+    }
+    size1=i-1;
+    while(r<=row)
+    {
+        c=1;
+        while(c<=column)
+        {
+            getline(ip2,Matrix[r][c],',');
+            c++;
+        }
+        r++;
+    }
+    ip.close();
+    ip1.close();
+    ip2.close();
+    ip3.close();
+    cout << "Enter the column number:-"<<endl;
+    getline(cin,k);
+    remove(k.begin(),k.end(),' ');
+    k1=Check(k[0]);
+    for(i=2;i<=row-1;i++)
+    {
+        for(l=i+1;l<=row;l++)
+        {
+            if(Matrix[i][k1]>Matrix[l][k1])
+            {
+                for(j=1;j<=column;j++)
+                {
+                    temp=Matrix[i][j];
+                    Matrix[i][j]=Matrix[l][j];
+                    Matrix[l][j]=temp;
+                }
+            }
+        }
+    }
+    for(i=1;i<=column;i++)
+        out << header[i] <<",";
+    for(i=2;i<=row;i++)
+    {
+        for(j=1;j<=column;j++)
+        {
+            out << Matrix[i][j] <<",";
+        }
+    }
+    out.close();
+}
+long Check(char c)
+
+{
+    char p;
+    if(c >=48 && c<=57)
+    {
+        return (c-'0');
+    }
+    else
+    {
+        cout << "Please Enter a integer"<<endl;
+        cout << "Enter again:-"<<endl;
+        cin >> p;
+        Check(p);
+    }
+}
+string CheckFile(char f[20])
+{
+    char f1[20],t1[20];
+    long i;
+    ifstream ip(f);
+    while(!ip.good())
+    {
+        cout << "Something went wrong"<<endl;
+        cout << "Enter file Again:-"<<endl;
+        cin >> f;
+        ip.open(f);
+    }
+    return f;
+}
+
